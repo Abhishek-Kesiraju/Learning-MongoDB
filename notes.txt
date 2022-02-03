@@ -1,0 +1,143 @@
+Use the recipe.json file uploaded for practicing the below queries.
+
+Show list of databases: show dbs 
+Get into a database : use database_name
+Show collections inside database : show collections
+
+
+Querying in MongoDB
+
+Show total information inside the collection:
+    db.collection_name.find()
+    db.collection_name.find().pretty()
+
+Find all rows which correspond to one column or some columns. For example title in database
+    db.collection_name.find( {}, {"title:1"})
+    db.collection_name.find( {}, {"col1":1, "col2":1})
+
+
+Limiting - Limit the number of rows or columns
+    db.collection_name.find().limit(number)     - Prints till that number of rows
+    Correspond it to some columns like before steps and then limit them
+    db.collection_name.find( {}, {"title:1"}).limit(number)
+
+Sorting - Sort the database in an ascending or descending order with respect to the column
+    db.collection_name.find().sort()
+    db.collection_name.find().sort("title":1) // print all queries with just title in ascending order
+    db.collection_name.find().sort("title": -1) // print all queries with just title in descending order
+
+Skipping - Skip rows and print rest.
+    db.collection_name.find().sort().skip(number)
+
+Operators - $lte for less than, $gte for greaterthan
+          - Use in the first {} instead of the second. and use another {} for writing in the conditional operator
+
+            db.collection_name.find({"cook_time": {$lte: 30}},{"title": 1}) // return titles of the collection whose cooktime is less than 30
+                                                   $gte // for greater than.
+ * If more than one conditional operator checking is done using just ' , ' Then it implicitly queries using " Logical AND"
+ example: 
+        db.collection_name.find({"cook_time": {$lte: 30}, "prep_time": {$gte: 20}}, {"title":1, "prep_time":1})
+        // returns titles whose cook_time>30 && prep_time>30
+
+Arrays:
+Usage of OR and all: $or, $in for checking columns with Logical or
+                     $all for checking columns with logical and
+ Using or: 
+        db.collection_name.find({$or: [{"cook_time": {$lte: 30}, "prep_time": {$gte: 20}}]},{"title": 1})
+        Another preferred way of using or by 
+        db.collection_name.find({"tags":{$in:["easy", "quick"]}},{"title": 1})
+                                        //easy or quick
+        db.collection_name.find({"tags":{$all:["easy", "quick"]}},{"title": 1})
+
+Querying inside objects of the array:
+        Do this using the dot notation
+    example: "ingredients" : {
+                            "name": " "
+                            "quantity": " "
+                            "unit": " " 
+                             }
+ 
+    here we obtain name of the ingredients using the dot notation
+    db.collection_name.find({"ingredients.name": "egg"},{"title": 1})
+                                "ingredients": {"name": "egg"} 
+                                // type notation should be used only if an exact match is required.
+                                // Which means all the objects are to be specified (not just name)
+    
+
+// Use the querying examples from the examples.json file
+
+    Updating the documents
+     $set 
+     $unset
+     $inc : Used for incrementing an integer element in the structure by a number
+     $insert
+     updateOne(): method used for updating only one element in the document.
+     $update : used for updating multiple documents at a time.
+     $upsert
+
+
+updateOne():   db.collection_name.updateOne({"title": "Pizza"},{$set : {"title":Thin crust Pizza"}})
+     $set :     // Sets the name of an already availible document
+               db.collection_name.updateOne({"title": "Thin crust Pizza"},{$set: {"vegan":false}})
+               // If a corresponding element is not present in the row... Set will add the element to the object.
+                // Now a boolean element vegan is added in the structure for the Thin crust Pizza row
+
+
+
+
+                db.collection_name.updateOne({"title": "Thin crust Pizza"},{$unset: {"vegan":1}})
+                // Will remove the vegan field.
+        $inc: db.collection_name.updateOne({"title": "Tacos"},{$inc: {"likes_count": 1}})
+               // Increments like count by one.
+
+Updating the Arrays:
+        $push and $pull.
+        db.examples.updateOne({"title": "Tacos"},{$push: {"likes": 30}})
+        // inserts another value in the likes array.
+        db.examples.updateOne({"title": "Tacos"},{$pull: {"likes": 30}})
+ There are more array operators that have to be referred from the notes.
+
+ Deleting the documents
+       we have deleteOne() and deleteMany()
+       Always prefer using deleteOne() to be safe.
+       db.recipes.deleteOne({"_id" : ObjectId(" ")})
+
+Challenge: 
+        Return titles of the recipes, with Ratings in a descending order of popularity, and then limit it to 4
+        db.recipes.find().sort("rating_avg": -1, "title":-1).limit(4)
+
+        db.recipes.find({}, {"title":1, "rating_avg":1}).sort({"rating_avg": -1}).limit(4).pretty()
+    
+        Return titles of the recipes liked by userid 1
+        db.recipes.find({},{"title": 1, "likes": 1}) // gives titles and likes in the recipes
+        db.recipes.find({"likes": {$all : [1]}},{"title": 1, "likes": 1})
+
+
+Data and Schema Modeling.
+
+.explain() : is used on a query to get extra information about the query we used.
+            db.collection_name.find(//query).explain("executionStats");
+
+ -- To know all the availible methods that can be used on our collection
+     db.collection_name.//Press Tab Twice
+
+Index will help us find documents faster while querying instead scanning all the availible docs.
+
+    Indexes can be created on the column we want using createIndex() and just see the indexes/indices using getIndexes()
+    db.collection_name.createIndex({"cook_time": -1}); // -1 for deciding the direction - descending , 1 for ascending ... just like sort command.
+
+    db.collection_name.getIndexes() - will let us know the name of index created for the above query // here it is "cook_time-1".
+
+    db.collection_name.dropIndex("cook_time-1"); // will delete the index created.
+
+
+Using GridFS to store files
+
+    mongofiles put file_name --db=collection_name // It will create the collection_name, if it doesnt exist.
+    mongofiles get file_name --db=collection_name // to to get a file from the GridFS
+
+    mongofiles delete file_name --db=collection_name
+
+Connector to Python
+
+    client = pymongo.MongoClient("localhost", 27017)
