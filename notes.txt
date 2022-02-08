@@ -147,6 +147,13 @@ Using GridFS to store files
 
     mongofiles delete file_name --db=collection_name
 
+Creating a Capped Collection 
+// Capped Collections are used to make Error log files ...
+db.createCollection("error_log", {capped: true, size: 10000, max: 10000});
+                                                // Max disk space that could be used by error_log is 10000 and max number of documents that could be created in log is 10000
+// Convert an already availible document into capped collection
+db.runCommand({"convertToCapped": "error_log2", size: 10000});
+
 Connector to Python
 
     client = pymongo.MongoClient("localhost", 27017)
