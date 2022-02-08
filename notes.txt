@@ -4,6 +4,9 @@ Show list of databases: show dbs
 Get into a database : use database_name
 Show collections inside database : show collections
 
+Importing a Json file into MongoDB
+
+    mongoimport --db=database_name --jsonArray file_name.json
 
 Querying in MongoDB
 
