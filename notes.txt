@@ -106,6 +106,8 @@ Updating the Arrays:
         db.examples.updateOne({"title": "Tacos"},{$pull: {"likes": 30}})
  There are more array operators that have to be referred from the notes.
 
+************NOTE : MANIPULATION FOR $SET $UNSET $INC $PUSH $PULL - is done in the second {}... All other manips such as $or $all $gt $lt are done in the first {} ************
+
  Deleting the documents
        we have deleteOne() and deleteMany()
        Always prefer using deleteOne() to be safe.
