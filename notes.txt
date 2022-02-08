@@ -18,6 +18,9 @@ Find all rows which correspond to one column or some columns. For example title 
     db.collection_name.find( {}, {"title:1"})
     db.collection_name.find( {}, {"col1":1, "col2":1})
 
+Using Regex to find the corresponding columns
+    db.collection_name.find({"title": {$regex: /taco/i }},{"title": 1}) // Search all titles starting with Taco 
+                                                // the /i represents case insensitive.
 
 Limiting - Limit the number of rows or columns
     db.collection_name.find().limit(number)     - Prints till that number of rows
@@ -50,6 +53,7 @@ Usage of OR and all: $or, $in for checking columns with Logical or
         Another preferred way of using or by 
         db.collection_name.find({"tags":{$in:["easy", "quick"]}},{"title": 1})
                                         //easy or quick
+ Using and:
         db.collection_name.find({"tags":{$all:["easy", "quick"]}},{"title": 1})
 
 Querying inside objects of the array:
@@ -73,11 +77,13 @@ Querying inside objects of the array:
      $set 
      $unset
      $inc : Used for incrementing an integer element in the structure by a number
-     $insert
+     insertOne(): Used for inserting a new document row in the collection. / Can also be used to create a new collection itself.
      updateOne(): method used for updating only one element in the document.
      $update : used for updating multiple documents at a time.
      $upsert
 
+insertOne(): db.collection_name.insertOne("title": "Schezwan Tacos"); // Creates a new title element with a new object id for it
+             db.new_collection_name.insertOne({});   // Creates a new collection... Can be seen with >show collections  command.
 
 updateOne():   db.collection_name.updateOne({"title": "Pizza"},{$set : {"title":Thin crust Pizza"}})
      $set :     // Sets the name of an already availible document
